@@ -1,24 +1,54 @@
-import React from 'react';
-import logo from './logo.svg';
+import React, { useState, useEffect } from 'react';
 import './App.css';
 
-function App() {
+const App = () => {
+
+  const [paises, setPaises] = useState('')
+  const [busqueda, setBusqueda] = useState('')
+
+  const buscarPaises = () => {
+    if(busqueda) {
+    fetch(`https://restcountries.eu/rest/v2/name/${busqueda}`)
+      .then(res => res.json())
+      .then(data => setPaises(data))
+    }
+  }
+
+  useEffect(buscarPaises, [])
+
+  const handleChange = (e) => {
+    setBusqueda(e.target.value)
+   }
+  
+   const handleSubmit = e => {
+    e.preventDefault()
+    buscarPaises(busqueda)
+   }
+ 
+
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <div className='Card'>
+        {
+        paises &&
+          paises.map(pais =>{
+            return(
+            <>
+            <h4>{pais.name}</h4>
+            <img src={pais.flag} />
+            <p>Capital: {pais.capital}</p>
+            <p>Habitantes: {pais.population}</p>
+            </>
+             ) 
+          }) 
+        }  
+      </div>
+     <div>
+       <form onSubmit={handleSubmit}>
+       <input type= 'text' value={busqueda} onChange={handleChange}/>
+       </form>
+     </div>
     </div>
   );
 }
